@@ -55,20 +55,27 @@ function parseWhileStatement(parsedCode, graph, inputVector) {
 function parseIfStatement(parsedCode, graph, previousNodes) {
     let nodeName = graph.addNode(evalCode(parsedCode.test), 'condition');
 
-    let lastNode = nodeName;
+    let endTrueNode = nodeName;
+    let endFalseNode = nodeName;
     addNewsEdges(previousNodes, nodeName, graph);
 
     let consequentNode = graphGenerator(parsedCode.consequent, graph, [{name: nodeName, type: 'condition true'}]);
     if (consequentNode) {
-        lastNode = consequentNode[0].name;
+        endTrueNode = consequentNode[0].name;
     }
     if (parsedCode.alternate) {
+
+    }
+    else {
 
     }
 
     // graph.addEdge(nodeName, graph.getLastNode() + 1);
     // parsedCode.alternate = substituteStatement(parsedCode.alternate);
-    return [{name: lastNode, type: 'end condition'}];
+    if(endTrueNode === endFalseNode)
+        return [{name: endTrueNode, type: 'end condition'}];
+    else
+        return [{name: endTrueNode, type: 'end condition'}, {name: endFalseNode, type: 'end condition'}];
 }
 
 function parseReturnStatement(parsedCode, graph, previousNodes) {
