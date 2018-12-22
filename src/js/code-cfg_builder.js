@@ -1,29 +1,32 @@
-import {parseCode, evalCode} from './code-analyzer';
+import {parseCode} from './code-analyzer';
 import {graphGenerator} from './statement-parser';
 
 class Graph {
     constructor() {
         this.edges = [];
         this.nodes = [];
+        this.reset_block = false;
     }
 
     addNode(data, type = 'assignment') {
         let name = this.nodes.length + 1;
-        if (this.nodes.length > 0) {
-            let lastNode = this.nodes[this.nodes.length - 1];
-            if (lastNode.type === type) {
-                lastNode.data.push(data);
-                return lastNode.name;
+        if(!this.reset_block) {
+            if (this.nodes.length > 0) {
+                let lastNode = this.nodes[this.nodes.length - 1];
+                if (lastNode.type === type) {
+                    lastNode.data.push(data);
+                    return lastNode.name;
+                }
             }
-            // else if ('if statement' === type) {
-            //     console.log('if statment');
-            //     this.addEdge(name, name + 1, 'true');
-            // }
-            // else
-            //     this.addEdge(name - 1, name);
         }
+        else
+            this.reset_block = false;
         this.nodes.push({name: name, data: [data], type: type});
         return name;
+    }
+
+    resetBlock(){
+        this.reset_block = true;
     }
 
     getLastNode() {

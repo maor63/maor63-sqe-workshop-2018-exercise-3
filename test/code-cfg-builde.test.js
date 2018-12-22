@@ -5,7 +5,7 @@ describe('The javascript parser', () => {
     it('is build graph from empty code', () => {
         assert.equal(
             JSON.stringify(extractGraphFromCode('')),
-            JSON.stringify({edges: [], nodes: []})
+            JSON.stringify({edges: [], nodes: [], reset_block: true})
         );
     });
 
@@ -13,7 +13,7 @@ describe('The javascript parser', () => {
         assert.equal(
             JSON.stringify(extractGraphFromCode(`
             function foo(){}`)),
-            JSON.stringify({edges: [], nodes: []})
+            JSON.stringify({edges: [], nodes: [], reset_block: true})
         );
     });
 
@@ -25,9 +25,8 @@ describe('The javascript parser', () => {
             }`)),
             JSON.stringify({
                 edges: [],
-                nodes: [{name: 1, data: ['return a;'], type: 'return'},
-
-                ]
+                nodes: [{name: 1, data: ['return a;'], type: 'return'}],
+                reset_block: false
             })
         );
     });
@@ -40,9 +39,8 @@ describe('The javascript parser', () => {
             }`)),
             JSON.stringify({
                 edges: [],
-                nodes: [
-                    {name: 1, data: ['let a = 1;'], type: 'assignment'},
-                ]
+                nodes: [{name: 1, data: ['let a = 1;'], type: 'assignment'},],
+                reset_block: false
             })
         );
     });
@@ -57,8 +55,8 @@ describe('The javascript parser', () => {
             }`)),
             JSON.stringify({
                 edges: [],
-                nodes: [
-                    {name: 1, data: ['let a = 1;', 'let b = \'hi\';', 'let c;'], type: 'assignment'},]
+                nodes: [{name: 1, data: ['let a = 1;', 'let b = \'hi\';', 'let c;'], type: 'assignment'},],
+                reset_block: false
             })
         );
     });
@@ -73,12 +71,11 @@ describe('The javascript parser', () => {
                 return a;
             }`)),
             JSON.stringify({
-                edges: [
-                    {from: 1, to: 2, condition: ''},
-                ],
+                edges: [{from: 1, to: 2, condition: ''},],
                 nodes: [{name: 1, data: ['let a = 1;', 'let b = \'hi\';', 'let c;'], type: 'assignment'},
                     {name: 2, data: ['return a;'], type: 'return'}
-                ]
+                ],
+                reset_block: false
             })
         );
     });
@@ -104,7 +101,8 @@ describe('The javascript parser', () => {
                 }
                     , {name: 2, data: ['b > 3'], type: 'condition'}
                     , {name: 3, data: ['return a;'], type: 'return'}
-                ]
+                ],
+                reset_block: false
             })
         );
     });
@@ -131,7 +129,41 @@ describe('The javascript parser', () => {
                     , {name: 2, data: ['b > 3'], type: 'condition'}
                     , {name: 3, data: ['let c = a + 6;'], type: 'assignment'}
                     , {name: 4, data: ['return a;'], type: 'return'}
-                ]
+                ],
+                reset_block: false
+            })
+        );
+    });
+
+    it('is build graph from empty function with if with var declaration and else and return', () => {
+        assert.equal(
+            JSON.stringify(extractGraphFromCode(`
+            function foo(a){
+                let a = 1;
+                if(b > 3){
+                    let c = a + 6;
+                }
+                else{
+                    let c = 2;
+                }
+                return a;
+            }`)),
+            JSON.stringify({
+                edges: [
+                    {from: 1, to: 2, condition: ''},
+                    {from: 2, to: 3, condition: 'true'},
+                    {from: 3, to: 5, condition: ''},
+                    {from: 2, to: 4, condition: 'false'},
+                    {from: 4, to: 5, condition: ''},
+                ],
+                nodes: [
+                    {name: 1, data: ['let a = 1;'], type: 'assignment'}
+                    , {name: 2, data: ['b > 3'], type: 'condition'}
+                    , {name: 3, data: ['let c = a + 6;'], type: 'assignment'}
+                    , {name: 4, data: ['let c = 2;'], type: 'assignment'}
+                    , {name: 5, data: ['return a;'], type: 'return'}
+                ],
+                reset_block: false
             })
         );
     });

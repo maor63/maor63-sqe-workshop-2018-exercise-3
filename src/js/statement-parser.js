@@ -37,6 +37,7 @@ function parseFunctionDeclaration(parsedCode, graph, previousNodes) {
 }
 
 function parseBlockStatement(parsedCode, graph, previousNodes) {
+    graph.resetBlock();
     return parseStatementList(parsedCode.body, graph, previousNodes);
 }
 
@@ -64,10 +65,10 @@ function parseIfStatement(parsedCode, graph, previousNodes) {
         endTrueNode = consequentNode[0].name;
     }
     if (parsedCode.alternate) {
-
-    }
-    else {
-
+        let alternateNode = graphGenerator(parsedCode.alternate, graph, [{name: nodeName, type: 'condition false'}]);
+        if (alternateNode) {
+            endTrueNode = alternateNode[0].name;
+        }
     }
 
     // graph.addEdge(nodeName, graph.getLastNode() + 1);
@@ -86,9 +87,8 @@ function parseReturnStatement(parsedCode, graph, previousNodes) {
 
 export function graphGenerator(parsedCode, graph, previousNodes = null) {
     if (parsedCode !== null && parsedCode.type in parseFunctions) {
-        let lastNode = parseFunctions[parsedCode.type](parsedCode, graph, previousNodes);
-        return lastNode;
+        return parseFunctions[parsedCode.type](parsedCode, graph, previousNodes);
     }
     else
-        return previousNodes;
+        return null;
 }
