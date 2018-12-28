@@ -205,4 +205,81 @@ describe('The javascript parser', () => {
         );
     });
 
+    it('is build graph from empty function with if with var declaration and else and else if and return', () => {
+        assert.equal(
+            JSON.stringify(extractGraphFromCode(`
+            function foo(a){
+                let a = 1;
+                if(b > 3){
+                    let c = a + 6;
+                }else if(b == 6){
+                    a = 7;
+                    let r = 3;
+                }
+                else{
+                    let c = 2;
+                }
+                return a;
+            }`)),
+            JSON.stringify({
+                'edges': [
+                    {'from': 4, 'to': 7, 'condition': ''},
+                    {'from': 7, 'to': 8, 'condition': ''},
+                    {'from': 8, 'to': 9, 'condition': 'true'},
+                    {'from': 8, 'to': 11, 'condition': 'false'},
+                    {'from': 9, 'to': 18, 'condition': ''},
+                    {'from': 11, 'to': 13, 'condition': 'true'},
+                    {'from': 11, 'to': 15, 'condition': 'false'},
+                    {'from': 13, 'to': 17, 'condition': ''},
+                    {'from': 15, 'to': 17, 'condition': ''},
+                    {'from': 17, 'to': 18, 'condition': ''},
+                    {'from': 18, 'to': 5, 'condition': ''}
+                ],
+                'nodes': [
+                    {'name': 4, 'data': ['start'], 'type': 'Entry'},
+                    {'name': 7, 'data': ['let a = 1'], 'type': 'assignment'},
+                    {'name': 8, 'data': ['b > 3'], 'type': 'Conditional'},
+                    {'name': 9, 'data': ['let c = a + 6'], 'type': 'assignment'},
+                    {'name': 11, 'data': ['b == 6'], 'type': 'Conditional'},
+                    {'name': 13, 'data': ['a = 7', 'let r = 3'], 'type': 'assignment'},
+                    {'name': 15, 'data': ['let c = 2'], 'type': 'assignment'},
+                    {'name': 17, 'data': [null], 'type': 'Normal'},
+                    {'name': 18, 'data': ['return a;'], 'type': 'Normal'},
+                    {'name': 5, 'data': ['end'], 'type': 'SuccessExit'}
+                ]
+            })
+        );
+    });
+
+    it('is build graph from function with while', () => {
+        assert.equal(
+            JSON.stringify(extractGraphFromCode(`
+            function foo(a){
+                let a = 1;
+                while(a < 2){
+                    a = 5;
+                }
+                return a;
+            }`)),
+            JSON.stringify({
+                'edges': [
+                    {'from': 4, 'to': 7, 'condition': ''},
+                    {'from': 7, 'to': 8, 'condition': ''},
+                    {'from': 8, 'to': 9, 'condition': 'true'},
+                    {'from': 8, 'to': 10, 'condition': 'false'},
+                    {'from': 9, 'to': 8, 'condition': ''},
+                    {'from': 10, 'to': 5, 'condition': ''}
+                ],
+                'nodes': [
+                    {'name': 4, 'data': ['start'], 'type': 'Entry'},
+                    {'name': 7, 'data': ['let a = 1'], 'type': 'assignment'},
+                    {'name': 8, 'data': ['a < 2'], 'type': 'Conditional'},
+                    {'name': 9, 'data': ['a = 5'], 'type': 'assignment'},
+                    {'name': 10, 'data': ['return a;'], 'type': 'Normal'},
+                    {'name': 5, 'data': ['end'], 'type': 'SuccessExit'}
+                ]
+            })
+        );
+    });
+
 });
