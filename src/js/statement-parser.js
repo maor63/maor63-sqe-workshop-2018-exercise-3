@@ -100,3 +100,155 @@ export function graphGenerator(parsedEsgraphNode, graph, previousNodes = null) {
     else
         return null;
 }
+
+export function convertFlowchartToGraph(flowchart) {
+    flowchart = JSON.parse(flowchart);
+    let functionJson = flowchart.functions[0];
+    // console.log(functionJson);
+    let graph = new Graph();
+    if (functionJson === undefined)
+        return graph;
+    let flowGraph = functionJson.flowGraph;
+    // console.log(flowGraph);
+    let nodeMap = {};
+
+    for (let i = 0; i < flowGraph.nodes.length; i++) {
+        let node = flowGraph.nodes[i];
+        nodeMap[node.id] = node;
+    }
+    // let edges = [];
+    for (let i = 0; i < flowGraph.edges.length; i++) {
+        let edge = flowGraph.edges[i];
+        edgeParser(edge, graph, nodeMap);
+
+    }
+    let nodesIds = Object.keys(nodeMap);
+    for (let i = 0; i < nodesIds.length; i++) {
+        let node = nodeMap[nodesIds[i]];
+        if (node.type === 'Entry')
+            graph.addNode(node.id, 'start', node.type);
+        else if (node.type === 'SuccessExit')
+            graph.addNode(node.id, 'end', node.type);
+        else
+            graph.addNode(node.id, node.data, node.type);
+    }
+    graph.validateEdges();
+    return graph;
+}
+
+let edgeDataParseFunctions = {
+    'VariableDeclarator': VariableDeclaratorEdge,
+};
+
+
+function VariableDeclaratorEdge(edge, graph, nodeMap) {
+    nodeMap[edge.from].data = 'let ' + evalCode(edge.data);
+    nodeMap[edge.from].type = 'assignment';
+    graph.addEdge(edge.from, edge.to, '');
+}
+
+function parseNormalEdge(edge, graph, nodeMap) {
+    nodeMap[edge.from].data = evalCode(edge.data);
+    graph.addEdge(edge.from, edge.to, '');
+}
+
+function parseFalseConditionalEdge(edge, graph, nodeMap) {
+    nodeMap[edge.from].data = evalCode(edge.data);
+    graph.addEdge(edge.from, edge.to, 'false');
+}
+
+function parseEpsilonEdge(edge, graph, nodeMap) {
+    graph.addEdge(edge.from, edge.to, '');
+}
+
+function parseConditionalEdge(edge, graph, nodeMap) {
+    if(!('data' in nodeMap[edge.from]))
+        nodeMap[edge.from].data = evalCode(edge.data);
+    let condition = edge.label.startsWith('!') ? 'false' : 'true';
+    graph.addEdge(edge.from, edge.to, condition);
+}
+
+function edgeParser(edge, graph, nodeMap) {
+    // console.log(edge.type);
+    if (edge.type === 'Conditional') {
+        parseConditionalEdge(edge, graph, nodeMap);
+
+    } else if(edge.type === 'Epsilon'){
+        parseEpsilonEdge(edge, graph, nodeMap);
+    }
+    else
+    {
+        if (edge !== undefined && edge.data.type in edgeDataParseFunctions) {
+            edgeDataParseFunctions[edge.data.type](edge, graph, nodeMap);
+        }
+        else
+            parseNormalEdge(edge, graph, nodeMap);
+    }
+}
+
+
+class Graph {
+    constructor() {
+        this.edges = [];
+        this.nodes = [];
+    }
+
+    addNode(name, data, type = '') {
+        // let name = this.nodes.length + 1;
+        let lastNode = this.nodes[this.nodes.length - 1];
+        if (lastNode !== undefined && type === 'assignment' && lastNode.type === type) {
+            lastNode.data.push(data);
+
+        }
+        else {
+            this.nodes.push({name: name, data: [data], type: type});
+        }
+        return name;
+    }
+
+    validateEdges() {
+        let nodeMap = this.getNodeMap();
+        let newEdges = [];
+        for (let i = 0; i < this.edges.length; i++) {
+            let edge = this.edges[i];
+            if (!(edge.to in nodeMap)) {
+                i = this.findNextExistsNode(i, nodeMap, newEdges);
+            }
+            else
+                newEdges.push(edge);
+        }
+        this.edges = newEdges;
+    }
+
+    findNextExistsNode(startIndex, nodeMap, newEdges) {
+        let edge = this.edges[startIndex];
+        for (let j = startIndex + 1; j < this.edges.length; j++) {
+            let nextEdge = this.edges[j];
+            if (nextEdge.to in nodeMap) {
+                console.log(nextEdge.to);
+                edge.to = nextEdge.to;
+                newEdges.push(edge);
+                startIndex = j;
+                break;
+            }
+        }
+        return startIndex;
+    }
+
+    getNodeMap() {
+        let nodeMap = {};
+        for (let i = 0; i < this.nodes.length; i++) {
+            nodeMap[this.nodes[i].name] = this.nodes[i];
+        }
+        return nodeMap;
+    }
+
+    getLastEdge() {
+        return this.edges[this.edges.length - 1];
+    }
+
+    addEdge(from, to, condition = '') {
+        this.edges.push({from: from, to: to, condition: condition});
+    }
+}
+
