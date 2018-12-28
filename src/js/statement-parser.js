@@ -138,6 +138,7 @@ export function convertFlowchartToGraph(flowchart) {
 
 let edgeDataParseFunctions = {
     'VariableDeclarator': VariableDeclaratorEdge,
+    'AssignmentExpression': AssignmentExpressionEdge,
 };
 
 
@@ -145,6 +146,17 @@ function VariableDeclaratorEdge(edge, graph, nodeMap) {
     nodeMap[edge.from].data = 'let ' + evalCode(edge.data);
     nodeMap[edge.from].type = 'assignment';
     graph.addEdge(edge.from, edge.to, '');
+}
+
+function AssignmentExpressionEdge(edge, graph, nodeMap) {
+    if (edge.label.indexOf('param') !== -1)
+        graph.addEdge(edge.from, edge.to, '');
+    else {
+
+        nodeMap[edge.from].data = evalCode(edge.data);
+        nodeMap[edge.from].type = 'assignment';
+        graph.addEdge(edge.from, edge.to, '');
+    }
 }
 
 function parseNormalEdge(edge, graph, nodeMap) {
@@ -162,8 +174,10 @@ function parseEpsilonEdge(edge, graph, nodeMap) {
 }
 
 function parseConditionalEdge(edge, graph, nodeMap) {
-    if(!('data' in nodeMap[edge.from]))
+    if (!('data' in nodeMap[edge.from])) {
         nodeMap[edge.from].data = evalCode(edge.data);
+        nodeMap[edge.from].type = 'Conditional';
+    }
     let condition = edge.label.startsWith('!') ? 'false' : 'true';
     graph.addEdge(edge.from, edge.to, condition);
 }
@@ -173,11 +187,10 @@ function edgeParser(edge, graph, nodeMap) {
     if (edge.type === 'Conditional') {
         parseConditionalEdge(edge, graph, nodeMap);
 
-    } else if(edge.type === 'Epsilon'){
+    } else if (edge.type === 'Epsilon') {
         parseEpsilonEdge(edge, graph, nodeMap);
     }
-    else
-    {
+    else {
         if (edge !== undefined && edge.data.type in edgeDataParseFunctions) {
             edgeDataParseFunctions[edge.data.type](edge, graph, nodeMap);
         }
