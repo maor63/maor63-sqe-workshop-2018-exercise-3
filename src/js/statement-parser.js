@@ -16,7 +16,11 @@ function addNewsEdges(previousNodes, currentNode, graph) {
         // console.log('prev nodes = ' + JSON.stringify(previousNodes));
         for (let i = 0; i < previousNodes.length; i++) {
             let previousNode = previousNodes[i];
-            let condition = previousNode.type === 'condition true' ? 'true' : '';
+            let condition = '';
+            if (previousNode.type === 'condition true')
+                condition = 'true';
+            else if (previousNode.type === 'condition false')
+                condition = 'false';
             graph.addEdge(previousNode.name, currentNode, condition);
         }
     }
@@ -33,12 +37,15 @@ function parseExpressionStatement(parsedCode, graph, previousNode) {
 }
 
 function parseFunctionDeclaration(parsedCode, graph, previousNodes) {
+    console.log('parseFunctionDeclaration');
     return graphGenerator(parsedCode.body, graph, previousNodes);
 }
 
-function parseBlockStatement(parsedCode, graph, previousNodes) {
-    graph.resetBlock();
-    return parseStatementList(parsedCode.body, graph, previousNodes);
+function parseBlockStatement(parsedEsgraphNode, graph, previousNodes) {
+    // graph.resetBlock();
+    // return parseStatementList(parsedEsgraphNode.body, graph, previousNodes);
+    graphGenerator(parsedEsgraphNode.normal, graph, previousNodes);
+    return null;
 }
 
 function parseStatementList(statementList, graph, previousNodes) {
@@ -73,7 +80,7 @@ function parseIfStatement(parsedCode, graph, previousNodes) {
 
     // graph.addEdge(nodeName, graph.getLastNode() + 1);
     // parsedCode.alternate = substituteStatement(parsedCode.alternate);
-    if(endTrueNode === endFalseNode)
+    if (endTrueNode === endFalseNode)
         return [{name: endTrueNode, type: 'end condition'}];
     else
         return [{name: endTrueNode, type: 'end condition'}, {name: endFalseNode, type: 'end condition'}];
@@ -85,9 +92,10 @@ function parseReturnStatement(parsedCode, graph, previousNodes) {
     return [{name: currentNode, type: 'return'}];
 }
 
-export function graphGenerator(parsedCode, graph, previousNodes = null) {
-    if (parsedCode !== null && parsedCode.type in parseFunctions) {
-        return parseFunctions[parsedCode.type](parsedCode, graph, previousNodes);
+export function graphGenerator(parsedEsgraphNode, graph, previousNodes = null) {
+    console.log(parsedEsgraphNode.astNode);
+    if (parsedEsgraphNode.astNode !== undefined && parsedEsgraphNode.astNode.type in parseFunctions) {
+        return parseFunctions[parsedEsgraphNode.astNode.type](parsedEsgraphNode, graph, previousNodes);
     }
     else
         return null;

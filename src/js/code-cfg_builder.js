@@ -1,5 +1,6 @@
 import {parseCode} from './code-analyzer';
 import {graphGenerator} from './statement-parser';
+import * as esgraph from 'esgraph';
 
 class Graph {
     constructor() {
@@ -47,18 +48,22 @@ class Graph {
 
 export function extractGraphFromCode(code, inputVector) {
     let parsedCode = parseCode(code);
-    let graph = new Graph();
-    graphGenerator(parsedCode, graph, inputVector);
+    // let graph = new Graph();
+    // graphGenerator(esgraph(parsedCode)[0], graph, inputVector);
     // let lastNode = graph.getLastNode();
     // let currentNode = graph.addNode('end node', 'end');
     // graph.addEdge(lastNode, currentNode);
-    return graph;
+
+    let graph = esgraph(parsedCode);
+    const dot = esgraph.dot(graph,{ counter: 1, source: graph[0] });
+    return dot;
 }
 
 export const buildGraph = (code, inputVector) => {
     let parsedCode = parseCode(code);
     let edges = [];
     let nodes = [];
-    let graph = extractGraphFromCode(parsedCode, inputVector);
+    // let graph = extractGraphFromCode(parsedCode, inputVector);
+
 };
 
