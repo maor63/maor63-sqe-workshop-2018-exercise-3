@@ -101,6 +101,17 @@ export function graphGenerator(parsedEsgraphNode, graph, previousNodes = null) {
         return null;
 }
 
+function addNodeToGraph(node, graph) {
+    if(!(node.id in graph.getNodeMap())){
+        if (node.type === 'Entry')
+            graph.addNode(node.id, 'start', node.type);
+        else if (node.type === 'SuccessExit')
+            graph.addNode(node.id, 'end', node.type);
+        else
+            graph.addNode(node.id, node.data, node.type);
+    }
+}
+
 export function convertFlowchartToGraph(flowchart) {
     flowchart = JSON.parse(flowchart);
     let functionJson = flowchart.functions[0];
@@ -120,18 +131,15 @@ export function convertFlowchartToGraph(flowchart) {
     for (let i = 0; i < flowGraph.edges.length; i++) {
         let edge = flowGraph.edges[i];
         edgeParser(edge, graph, nodeMap);
-
     }
-    let nodesIds = Object.keys(nodeMap);
-    for (let i = 0; i < nodesIds.length; i++) {
-        let node = nodeMap[nodesIds[i]];
-        if (node.type === 'Entry')
-            graph.addNode(node.id, 'start', node.type);
-        else if (node.type === 'SuccessExit')
-            graph.addNode(node.id, 'end', node.type);
-        else
-            graph.addNode(node.id, node.data, node.type);
-    }
+    let lastEdge = graph.getLastEdge();
+    console.log('last edge ' + lastEdge);
+    addNodeToGraph(nodeMap[lastEdge.to], graph);
+    // let nodesIds = Object.keys(nodeMap);
+    // for (let i = 0; i < nodesIds.length; i++) {
+    //     let node = nodeMap[nodesIds[i]];
+    //     addNodeToGraph(node, graph);
+    // }
     graph.validateEdges();
     return graph;
 }
@@ -145,31 +153,38 @@ let edgeDataParseFunctions = {
 function VariableDeclaratorEdge(edge, graph, nodeMap) {
     nodeMap[edge.from].data = 'let ' + evalCode(edge.data);
     nodeMap[edge.from].type = 'assignment';
+    addNodeToGraph(nodeMap[edge.from], graph);
     graph.addEdge(edge.from, edge.to, '');
 }
 
 function AssignmentExpressionEdge(edge, graph, nodeMap) {
-    if (edge.label.indexOf('param') !== -1)
+    if (edge.label.indexOf('param') !== -1) {
+        addNodeToGraph(nodeMap[edge.from], graph);
         graph.addEdge(edge.from, edge.to, '');
+    }
     else {
 
         nodeMap[edge.from].data = evalCode(edge.data);
         nodeMap[edge.from].type = 'assignment';
+        addNodeToGraph(nodeMap[edge.from], graph);
         graph.addEdge(edge.from, edge.to, '');
     }
 }
 
 function parseNormalEdge(edge, graph, nodeMap) {
     nodeMap[edge.from].data = evalCode(edge.data);
+    addNodeToGraph(nodeMap[edge.from], graph);
     graph.addEdge(edge.from, edge.to, '');
 }
 
 function parseFalseConditionalEdge(edge, graph, nodeMap) {
     nodeMap[edge.from].data = evalCode(edge.data);
+    addNodeToGraph(nodeMap[edge.from], graph);
     graph.addEdge(edge.from, edge.to, 'false');
 }
 
 function parseEpsilonEdge(edge, graph, nodeMap) {
+    addNodeToGraph(nodeMap[edge.from], graph);
     graph.addEdge(edge.from, edge.to, '');
 }
 
@@ -179,6 +194,7 @@ function parseConditionalEdge(edge, graph, nodeMap) {
         nodeMap[edge.from].type = 'Conditional';
     }
     let condition = edge.label.startsWith('!') ? 'false' : 'true';
+    addNodeToGraph(nodeMap[edge.from], graph);
     graph.addEdge(edge.from, edge.to, condition);
 }
 
@@ -209,15 +225,18 @@ class Graph {
     addNode(name, data, type = '') {
         // let name = this.nodes.length + 1;
         let lastNode = this.nodes[this.nodes.length - 1];
-        if (lastNode !== undefined && type === 'assignment' && lastNode.type === type) {
+        if (lastNode !== undefined)
+            console.log('last: ' + lastNode.name + ' now: ' + name);
+        if (lastNode !== undefined && type === 'assignment' && lastNode.type === type && lastNode.name + 1 === name) {
             lastNode.data.push(data);
-
+            lastNode.name = name;
         }
         else {
             this.nodes.push({name: name, data: [data], type: type});
         }
         return name;
     }
+
 
     validateEdges() {
         let nodeMap = this.getNodeMap();
@@ -238,7 +257,7 @@ class Graph {
         for (let j = startIndex + 1; j < this.edges.length; j++) {
             let nextEdge = this.edges[j];
             if (nextEdge.to in nodeMap) {
-                console.log(nextEdge.to);
+                // console.log(nextEdge.to);
                 edge.to = nextEdge.to;
                 newEdges.push(edge);
                 startIndex = j;
