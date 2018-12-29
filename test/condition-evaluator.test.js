@@ -125,14 +125,14 @@ describe('The condition evaluator tests', () => {
                 let a = x + 1;
                 let b = a + y;
                 let c = 0;
-                
-                if (b < z) { 
+
+                if (b < z) {
                     c = c + 5;
                     return x + y + z + c;
-                } else if (b < z * 2) { 
+                } else if (b < z * 2) {
                     c = c + x + 5;
                     return x + y + z + c;
-                } else { 
+                } else {
                     c = c + z + 5;
                     return x + y + z + c;
                 }
@@ -149,14 +149,14 @@ describe('The condition evaluator tests', () => {
                 let a = x + 1;
                 let b = a + y;
                 let c = 0;
-                
-                if (b < z) { 
+
+                if (b < z) {
                     c = c + 5;
                     return x + y + z + c;
-                } else if (b < z * 2) { 
+                } else if (b < z * 2) {
                     c = c + x + 5;
                     return x + y + z + c;
-                } else { 
+                } else {
                     c = c + z + 5;
                     return x + y + z + c;
                 }
@@ -173,14 +173,14 @@ describe('The condition evaluator tests', () => {
                 let a = x[2] + 1;
                 let b = a + y;
                 let c = 0;
-                
-                if (b < z) { 
+
+                if (b < z) {
                     c = c + 5;
                     return x[2] + y + z + c;
-                } else if (b < z * 2) { 
+                } else if (b < z * 2) {
                     c = c + x[2] + 5;
                     return x[2] + y + z + c;
-                } else { 
+                } else {
                     c = c + z + 5;
                     return x[2] + y + z + c;
                 }
@@ -197,18 +197,18 @@ describe('The condition evaluator tests', () => {
                 let a = x[2] + 1;
                 let b = a + y;
                 let c = 0;
-                
-                if (b < z) { 
+
+                if (b < z) {
                     c = c + 5;
                     return x[2] + y + z + c;
-                } else if (b < z * 2) { 
+                } else if (b < z * 2) {
                     c = c + x[2] + 5;
                     return x[2] + y + z + c;
-                } else { 
+                } else {
                     c = c + z + 5;
                     return x[2] + y + z + c;
                 }
-                
+
                 while (a < z) {
                     c = a + b;
                     z = c * 2;
@@ -225,15 +225,15 @@ describe('The condition evaluator tests', () => {
                             let a = x + 1;
                             let b = a + y;
                             let c = 0;
-                            
+
                             while (a < z) {
                                 c = a + b;
                                 z = c * 2;
                             }
-                            
+
                             return z;
                         }
-                    
+
             `, {x: 1, y: 2, z: 6})),
             JSON.stringify([[true, 7]])
         );
@@ -246,14 +246,14 @@ describe('The condition evaluator tests', () => {
                 let a = x + 1;
                 let b = a + y[0];
                 let c = 0;
-                
-                if (b < z) { 
+
+                if (b < z) {
                     c = c + 5;
                     return x + y[0] + z + c;
-                } else if (b < z * 2) { 
+                } else if (b < z * 2) {
                     c = c + x + 5;
                     return x + y[0] + z + c;
-                } else { 
+                } else {
                     c = c + z + 5;
                     return x + y[0] + z + c;
                 }

@@ -77,12 +77,6 @@ function parseNormalEdge(edge, graph, nodeMap) {
     graph.addEdge(edge.from, edge.to, '');
 }
 
-function parseFalseConditionalEdge(edge, graph, nodeMap) {
-    nodeMap[edge.from].data = evalCode(edge.data);
-    addNodeToGraph(nodeMap[edge.from], graph);
-    graph.addEdge(edge.from, edge.to, 'false');
-}
-
 function parseEpsilonEdge(edge, graph, nodeMap) {
     addNodeToGraph(nodeMap[edge.from], graph);
     graph.addEdge(edge.from, edge.to, '');

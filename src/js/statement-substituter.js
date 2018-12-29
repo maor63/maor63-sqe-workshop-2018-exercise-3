@@ -84,8 +84,6 @@ function parseIfStatement(parsedCode, varMap, inputVector, evaluatedConditions, 
         preConditions = '!({})'.format(preIfConditions.join(' || '));
         fullCondition = preConditions + ' && ' + condition;
     }
-
-    console.log(fullCondition);
     preIfConditions.push(condition);
     evaluatedConditions.push([fullCondition, parsedCode.loc.start.line]);
     parsedCode.consequent = substituteStatement(parsedCode.consequent, varMap, inputVector, evaluatedConditions,preIfConditions);
