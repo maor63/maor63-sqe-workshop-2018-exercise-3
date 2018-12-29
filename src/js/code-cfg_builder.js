@@ -1,7 +1,5 @@
 import {parseCode} from './code-analyzer';
-import {convertJsonChartToGraph} from './statement-parser';
-import * as esgraph from 'esgraph';
-import * as js2flowchart from 'js2flowchart';
+import {convertJsonChartToGraph} from './json-to-chart-convertor';
 import * as Styx from 'styx';
 
 
