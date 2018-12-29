@@ -116,7 +116,7 @@ class Graph {
         this.nodes = [];
     }
 
-    addNode(name, data, type = '') {
+    addNode(name, data, type) {
         let lastNode = this.nodes[this.nodes.length - 1];
         if (lastNode !== undefined && type === 'assignment' && lastNode.type === type && lastNode.name + 1 === name) {
             lastNode.data.push(data);
@@ -159,7 +159,7 @@ class Graph {
         return this.edges[this.edges.length - 1];
     }
 
-    addEdge(from, to, condition = '') {
+    addEdge(from, to, condition) {
         this.edges.push({from: from, to: to, condition: condition});
     }
 
