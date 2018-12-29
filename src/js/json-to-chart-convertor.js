@@ -168,5 +168,15 @@ class Graph {
     addEdge(from, to, condition = '') {
         this.edges.push({from: from, to: to, condition: condition});
     }
+
+    getNodeOutEdges(nodeName){
+        let outEdges = [];
+        for (let i = 0; i < this.edges.length; i++) {
+            let edge = this.edges[i];
+            if(edge.from === nodeName)
+                outEdges.push(edge);
+        }
+        return outEdges;
+    }
 }
 

@@ -1,13 +1,18 @@
 import * as esprima from 'esprima';
 import * as escodegen from 'escodegen';
 
-const parseCode = (codeToParse) => {
-    return esprima.parseScript(codeToParse);
-};
+function parseCode(codeToParse) {
+    return esprima.parseScript(codeToParse, {loc: true});
+}
 
-const evalCode = (codeToEval) => {
+function evalCode(codeToEval) {
     return escodegen.generate(codeToEval);
-};
+}
+
+function convertStringToParsedCode(codeString) {
+    let parsed = parseCode(codeString);
+    return parsed.body[0].expression;
+}
 
 String.prototype.format = function () {
     var i = 0, args = arguments;
@@ -16,4 +21,4 @@ String.prototype.format = function () {
     });
 };
 
-export {parseCode, evalCode};
+export {parseCode, evalCode, convertStringToParsedCode};
