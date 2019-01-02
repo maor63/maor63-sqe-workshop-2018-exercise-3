@@ -41,6 +41,7 @@ export function convertJsonChartToGraph(flowchart) {
     let flowGraph = functionJson.flowGraph;
     let nodeMap = createNodeMap(flowGraph);
     generateGraph(flowGraph, graph, nodeMap);
+    graph.removeNullNodes();
     return graph;
 }
 
@@ -93,7 +94,6 @@ function parseConditionalEdge(edge, graph, nodeMap) {
 }
 
 function edgeParser(edge, graph, nodeMap) {
-    // console.log(edge.type);
     if (edge.type === 'Conditional') {
         parseConditionalEdge(edge, graph, nodeMap);
 
@@ -171,6 +171,45 @@ class Graph {
                 outEdges.push(edge);
         }
         return outEdges;
+    }
+
+    getNodeInEdges(nodeName){
+        let inEdges = [];
+        for (let edge of this.edges) {
+            if(edge.to === nodeName)
+                inEdges.push(edge);
+        }
+        return inEdges;
+    }
+
+    removeNullNodes(){
+        for (let node of this.nodes) {
+            if(node.data[0] === undefined){
+                let inEdges = this.getNodeInEdges(node.name);
+                let outEdges = this.getNodeOutEdges(node.name);
+                for(let inEdge of inEdges){
+                    let outEdge = outEdges[0];
+                    inEdge.to = outEdge.to;
+                }
+                this.removeNode(node.name);
+            }
+        }
+
+    }
+
+    removeNode(nodeName) {
+        let newNodes = [];
+        for (let node of this.nodes) {
+            if(node.name !== nodeName)
+                newNodes.push(node);
+        }
+        let newEdges = [];
+        for(let edge of this.edges){
+            if(edge.from !== nodeName)
+                newEdges.push(edge);
+        }
+        this.nodes = newNodes;
+        this.edges = newEdges;
     }
 }
 

@@ -35,6 +35,7 @@ function convertExitNode(mapNodeToSign, node, output) {
 function convertNodesToDiagram(nodes, mapNodeToSign, output) {
     let op = 1;
     let cond = 1;
+    let node_number = 1;
     for (let node of nodes) {
         if (node.type === 'Entry') {
             convertEntryNode(mapNodeToSign, node, output);
@@ -42,12 +43,10 @@ function convertNodesToDiagram(nodes, mapNodeToSign, output) {
             convertExitNode(mapNodeToSign, node, output);
         } else if (node.type === 'Conditional') {
             mapNodeToSign[node.name] = 'cond{}'.format(cond);
-            output.push('cond{}=>condition: {} | {}'.format(cond, node.data, node.color));
-            cond++;
+            output.push('cond{}=>condition: ({}) \n{} | {}'.format(cond++, node_number++, node.data.join('\n'), node.color));
         } else {
             mapNodeToSign[node.name] = 'op{}'.format(op);
-            output.push('op{}=>operation: {} | {}'.format(op, node.data, node.color));
-            op++;
+            output.push('op{}=>operation: ({}) \n{} | {}'.format(op++, node_number++, node.data.join('\n'), node.color));
         }
 
     }

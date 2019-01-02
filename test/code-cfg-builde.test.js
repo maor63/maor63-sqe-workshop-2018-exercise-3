@@ -121,15 +121,13 @@ describe('The javascript parser', () => {
                 'edges': [
                     {'from': 4, 'to': 9, 'condition': ''},
                     {'from': 9, 'to': 10, 'condition': ''},
-                    {'from': 10, 'to': 11, 'condition': 'true'},
+                    {'from': 10, 'to': 12, 'condition': 'true'},
                     {'from': 10, 'to': 12, 'condition': 'false'},
-                    {'from': 11, 'to': 12, 'condition': ''},
                     {'from': 12, 'to': 5, 'condition': ''}
                 ],
                 'nodes': [{'name': 4, 'data': ['start'], 'type': 'Entry'},
                     {'name': 9, 'data': ['let a = 1', 'let b = \'hi\'', 'let c'], 'type': 'assignment'},
                     {'name': 10, 'data': ['b > 3'], 'type': 'Conditional'},
-                    {'name': 11, 'data': [null], 'type': 'Normal'},
                     {'name': 12, 'data': ['return a;'], 'type': 'Normal'},
                     {'name': 5, 'data': ['end'], 'type': 'SuccessExit'}
                 ]
@@ -230,9 +228,8 @@ describe('The javascript parser', () => {
                     {'from': 9, 'to': 18, 'condition': ''},
                     {'from': 11, 'to': 13, 'condition': 'true'},
                     {'from': 11, 'to': 15, 'condition': 'false'},
-                    {'from': 13, 'to': 17, 'condition': ''},
-                    {'from': 15, 'to': 17, 'condition': ''},
-                    {'from': 17, 'to': 18, 'condition': ''},
+                    {'from': 13, 'to': 18, 'condition': ''},
+                    {'from': 15, 'to': 18, 'condition': ''},
                     {'from': 18, 'to': 5, 'condition': ''}
                 ],
                 'nodes': [
@@ -243,7 +240,6 @@ describe('The javascript parser', () => {
                     {'name': 11, 'data': ['b == 6'], 'type': 'Conditional'},
                     {'name': 13, 'data': ['a = 7', 'let r = 3'], 'type': 'assignment'},
                     {'name': 15, 'data': ['let c = 2'], 'type': 'assignment'},
-                    {'name': 17, 'data': [null], 'type': 'Normal'},
                     {'name': 18, 'data': ['return a;'], 'type': 'Normal'},
                     {'name': 5, 'data': ['end'], 'type': 'SuccessExit'}
                 ]
@@ -370,9 +366,8 @@ describe('The javascript parser', () => {
                     {'from': 9, 'to': 18, 'condition': ''},
                     {'from': 11, 'to': 13, 'condition': 'true'},
                     {'from': 11, 'to': 15, 'condition': 'false'},
-                    {'from': 13, 'to': 17, 'condition': ''},
-                    {'from': 15, 'to': 17, 'condition': ''},
-                    {'from': 17, 'to': 18, 'condition': ''},
+                    {'from': 13, 'to': 18, 'condition': ''},
+                    {'from': 15, 'to': 18, 'condition': ''},
                     {'from': 18, 'to': 5, 'condition': ''}
                 ],
                 'nodes': [
@@ -383,7 +378,6 @@ describe('The javascript parser', () => {
                     {'name': 11, 'data': ['b == 6'], 'type': 'Conditional', 'color': 'red'},
                     {'name': 13, 'data': ['a = 7', 'let r = 3'], 'type': 'assignment', 'color': 'red'},
                     {'name': 15, 'data': ['let c = 2'], 'type': 'assignment', 'color': 'green'},
-                    {'name': 17, 'data': [null], 'type': 'Normal', 'color': 'green'},
                     {'name': 18, 'data': ['return a;'], 'type': 'Normal', 'color': 'green'},
                     {'name': 5, 'data': ['end'], 'type': 'SuccessExit', 'color': 'green'}
                 ]
@@ -416,9 +410,8 @@ describe('The javascript parser', () => {
                     {'from': 9, 'to': 18, 'condition': ''},
                     {'from': 11, 'to': 13, 'condition': 'true'},
                     {'from': 11, 'to': 15, 'condition': 'false'},
-                    {'from': 13, 'to': 17, 'condition': ''},
-                    {'from': 15, 'to': 17, 'condition': ''},
-                    {'from': 17, 'to': 18, 'condition': ''},
+                    {'from': 13, 'to': 18, 'condition': ''},
+                    {'from': 15, 'to': 18, 'condition': ''},
                     {'from': 18, 'to': 5, 'condition': ''}
                 ],
                 'nodes': [
@@ -429,7 +422,6 @@ describe('The javascript parser', () => {
                     {'name': 11, 'data': ['b == 6'], 'type': 'Conditional', 'color': 'red'},
                     {'name': 13, 'data': ['a = 7', 'let r = 3'], 'type': 'assignment', 'color': 'red'},
                     {'name': 15, 'data': ['let c = 2'], 'type': 'assignment', 'color': 'red'},
-                    {'name': 17, 'data': [null], 'type': 'Normal', 'color': 'red'},
                     {'name': 18, 'data': ['return a;'], 'type': 'Normal', 'color': 'green'},
                     {'name': 5, 'data': ['end'], 'type': 'SuccessExit', 'color': 'green'}
                 ]
@@ -462,9 +454,8 @@ describe('The javascript parser', () => {
                     {'from': 9, 'to': 18, 'condition': ''},
                     {'from': 11, 'to': 13, 'condition': 'true'},
                     {'from': 11, 'to': 15, 'condition': 'false'},
-                    {'from': 13, 'to': 17, 'condition': ''},
-                    {'from': 15, 'to': 17, 'condition': ''},
-                    {'from': 17, 'to': 18, 'condition': ''},
+                    {'from': 13, 'to': 18, 'condition': ''},
+                    {'from': 15, 'to': 18, 'condition': ''},
                     {'from': 18, 'to': 5, 'condition': ''}
                 ],
                 'nodes': [
@@ -475,7 +466,6 @@ describe('The javascript parser', () => {
                     {'name': 11, 'data': ['b == 6'], 'type': 'Conditional', 'color': 'green'},
                     {'name': 13, 'data': ['a = 7', 'let r = 3'], 'type': 'assignment', 'color': 'green'},
                     {'name': 15, 'data': ['let c = 2'], 'type': 'assignment', 'color': 'red'},
-                    {'name': 17, 'data': [null], 'type': 'Normal', 'color': 'green'},
                     {'name': 18, 'data': ['return a;'], 'type': 'Normal', 'color': 'green'},
                     {'name': 5, 'data': ['end'], 'type': 'SuccessExit', 'color': 'green'}
                 ]
